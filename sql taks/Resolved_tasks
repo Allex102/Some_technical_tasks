@@ -1,0 +1,54 @@
+CREATE TABLE company(
+	companyID serial,
+	companyName varchar(256),
+	companyCountry varchar(256),
+
+	CONSTRAINT PK_test_company_companyID PRIMARY KEY(companyID)
+);
+
+CREATE TABLE phone(
+	phoneId serial,
+	phoneModel varchar (256) DEFAULT NULL,
+	companyId int,
+	price int DEFAULT NULL,
+
+	CONSTRAINT PK_test_phone_phoneId PRIMARY KEY(phoneId),
+	CONSTRAINT FK_test_phone_companyId FOREIGN KEY(companyId) REFERENCES company(companyId)
+);
+
+INSERT INTO company
+	VALUES(1,'GuchiPhone','Russia'),
+			(2,'Nokia','Germany'),
+			(3,'Samsung','China');
+
+INSERT INTO phone
+VALUES 	(1,'3350',2,3780),
+		(2,'IGuchi x',1,15000),
+		(3,'8820',2,8940),
+		(4,'A7',3,29000),
+		(5,'GuchiPhone',1,36000),
+		(6,'A8',3,42000);
+
+SELECT companyName, COUNT (companyId) as Количество_предствленных_моделей, SUM(price) as Общая_стоимость
+FROM company
+JOIN phone USING(companyId)
+GROUP BY companyName;
+
+SELECT companyName,avg(phone.price) AS Результат
+FROM company
+JOIN phone USING(companyId)
+GROUP BY companyName
+ORDER BY Результат DESC
+LIMIT 1;
+
+SELECT companyCountry,COUNT(phone.phoneId) AS Количество_китайских_производителей
+FROM company 
+JOIN phone USING(companyId)
+WHERE companyCountry='China'
+GROUP BY companyCountry;
+
+SELECT companyCountry,companyName,MAX(price) AS Результат
+FROM company
+JOIN phone USING(companyId)
+GROUP BY companyName,companyCountry 
+ORDER BY Результат DESC;
